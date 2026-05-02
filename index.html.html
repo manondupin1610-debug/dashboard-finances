@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finances Focus Flow</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --card: #FFFFFF;
+    --sand: #F5F0EB;
+    --text: #2C2420;
+    --muted: #9C8F85;
+    --yellow: #F9EFC0;
+    --yellow-dark: #C9A84C;
+    --yellow-mid: #EDD97A;
+    --green: #D6ECD6;
+    --green-dark: #4A8C5C;
+    --coral: #FAE0D8;
+    --coral-dark: #C4714A;
+    --blue: #D8E8F5;
+    --blue-dark: #3A6EA8;
+    --purple: #EAE0F5;
+    --purple-dark: #7A5AA8;
+    --border: rgba(156,143,133,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1.5rem 3rem;
+  }
+
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 4px;
+    letter-spacing: -0.3px;
+  }
+
+  .page-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    font-weight: 300;
+  }
+
+  .month-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2rem;
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 16px;
+    width: fit-content;
+  }
+
+  .month-selector label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .month-selector input {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    border: none;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .kpi-card {
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+
+  .kpi-card:hover { transform: translateY(-2px); }
+
+  .kpi-accent {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .kpi-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+
+  .kpi-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 4px;
+  }
+
+  .kpi-value {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+    font-family: 'Playfair Display', serif;
+    line-height: 1;
+  }
+
+  .kpi-value input {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text);
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    cursor: text;
+  }
+
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-weight: 300;
+  }
+
+  .gauges-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 2rem;
+  }
+
+  .gauge-card {
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .gauge-title {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .gauge-wrap {
+    position: relative;
+    width: 120px;
+    height: 70px;
+    margin-bottom: 12px;
+  }
+
+  .gauge-svg { width: 120px; height: 70px; }
+
+  .gauge-pct {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .gauge-detail {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .solde-card {
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .solde-left { flex: 1; min-width: 160px; }
+  .solde-label { font-size: 11px; color: var(--muted); font-weight: 300; margin-bottom: 6px; }
+
+  .solde-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .solde-value.positive { color: var(--green-dark); }
+  .solde-value.negative { color: var(--coral-dark); }
+
+  .solde-bar-wrap {
+    flex: 2; min-width: 200px;
+  }
+
+  .bar-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 300;
+  }
+
+  .bar-track {
+    height: 8px;
+    background: var(--sand);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill-rev {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--yellow-mid);
+    transition: width 0.6s ease;
+  }
+
+  .bar-fill-dep {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    border-radius: 4px;
+    background: var(--coral-dark);
+    opacity: 0.5;
+    transition: width 0.6s ease;
+  }
+
+  .bar-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+
+  .projection-card {
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 2rem;
+  }
+
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .proj-item {
+    background: var(--sand);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+
+  .proj-month {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 4px;
+  }
+
+  .proj-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .proj-val input {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text);
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    cursor: text;
+  }
+
+  .proj-status {
+    font-size: 10px;
+    margin-top: 4px;
+    font-weight: 400;
+  }
+
+  .status-attendu { color: var(--yellow-dark); }
+  .status-recu { color: var(--green-dark); }
+
+  .updated {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 300;
+  }
+
+  @media (max-width: 500px) {
+    .proj-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<p class="page-title">Finances Focus Flow</p>
+<p class="page-sub">Dashboard mensuel — cliquer sur un chiffre pour le modifier</p>
+
+<div class="month-selector">
+  <label>Mois en cours</label>
+  <input type="month" id="monthPicker" value="2026-05">
+</div>
+
+<p class="section-label">Vue d'ensemble</p>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-accent" style="background:var(--yellow-mid)"></div>
+    <div class="kpi-icon" style="background:var(--yellow)">💰</div>
+    <div class="kpi-label">Revenu brut</div>
+    <div class="kpi-value"><input type="number" id="brut" value="997" min="0" step="1"> €</div>
+    <div class="kpi-sub">encaissé ce mois</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-accent" style="background:var(--coral-dark)"></div>
+    <div class="kpi-icon" style="background:var(--coral)">📤</div>
+    <div class="kpi-label">URSSAF dû</div>
+    <div class="kpi-value" id="urssaf-display">—</div>
+    <div class="kpi-sub">
+      Taux : <input type="number" id="taux" value="11" min="0" max="100" step="0.1" style="width:36px;font-size:11px;border:none;background:transparent;outline:none;font-family:DM Sans,sans-serif;color:var(--muted);cursor:text">%
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-accent" style="background:var(--green-dark)"></div>
+    <div class="kpi-icon" style="background:var(--green)">✨</div>
+    <div class="kpi-label">Revenu net</div>
+    <div class="kpi-value" id="net-display">—</div>
+    <div class="kpi-sub">après cotisations</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-accent" style="background:var(--blue-dark)"></div>
+    <div class="kpi-icon" style="background:var(--blue)">🛒</div>
+    <div class="kpi-label">Dépenses</div>
+    <div class="kpi-value"><input type="number" id="depenses" value="0" min="0" step="1"> €</div>
+    <div class="kpi-sub">ce mois</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-accent" style="background:var(--purple-dark)"></div>
+    <div class="kpi-icon" style="background:var(--purple)">⏳</div>
+    <div class="kpi-label">Reste à encaisser</div>
+    <div class="kpi-value"><input type="number" id="reste" value="0" min="0" step="1"> €</div>
+    <div class="kpi-sub">virements attendus</div>
+  </div>
+  <div class="kpi-card" id="solde-card">
+    <div class="kpi-accent" id="solde-accent" style="background:var(--green-dark)"></div>
+    <div class="kpi-icon" style="background:var(--green)" id="solde-icon">🎯</div>
+    <div class="kpi-label">Solde réel</div>
+    <div class="kpi-value" id="solde-display">—</div>
+    <div class="kpi-sub">net − dépenses</div>
+  </div>
+</div>
+
+<p class="section-label">Jauges de progression</p>
+
+<div class="gauges-section">
+  <div class="gauge-card">
+    <div class="gauge-title">Plafond micro-entreprise<br><span style="font-size:10px">77 700 € / an</span></div>
+    <div class="gauge-wrap">
+      <svg class="gauge-svg" viewBox="0 0 120 70">
+        <path d="M10,65 A55,55 0 0,1 110,65" fill="none" stroke="#F5F0EB" stroke-width="10" stroke-linecap="round"/>
+        <path id="gauge-plafond" d="M10,65 A55,55 0 0,1 110,65" fill="none" stroke="#EDD97A" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 172.7"/>
+      </svg>
+      <div class="gauge-pct" id="pct-plafond">0%</div>
+    </div>
+    <div class="gauge-detail">
+      CA cumulé : <strong><input type="number" id="ca-cumule" value="997" min="0" step="1" style="width:60px;font-size:11px;border:none;background:transparent;outline:none;font-family:DM Sans,sans-serif;font-weight:500;color:var(--text);cursor:text"> €</strong>
+    </div>
+  </div>
+
+  <div class="gauge-card">
+    <div class="gauge-title">Taux d'encaissement<br><span style="font-size:10px">reçu vs attendu</span></div>
+    <div class="gauge-wrap">
+      <svg class="gauge-svg" viewBox="0 0 120 70">
+        <path d="M10,65 A55,55 0 0,1 110,65" fill="none" stroke="#F5F0EB" stroke-width="10" stroke-linecap="round"/>
+        <path id="gauge-encaiss" d="M10,65 A55,55 0 0,1 110,65" fill="none" stroke="#A8D8B0" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 172.7"/>
+      </svg>
+      <div class="gauge-pct" id="pct-encaiss">—</div>
+    </div>
+    <div class="gauge-detail" id="detail-encaiss">Brut reçu ÷ (brut + reste)</div>
+  </div>
+
+  <div class="gauge-card">
+    <div class="gauge-title">Ratio dépenses / net<br><span style="font-size:10px">idéal &lt; 30%</span></div>
+    <div class="gauge-wrap">
+      <svg class="gauge-svg" viewBox="0 0 120 70">
+        <path d="M10,65 A55,55 0 0,1 110,65" fill="none" stroke="#F5F0EB" stroke-width="10" stroke-linecap="round"/>
+        <path id="gauge-ratio" d="M10,65 A55,55 0 0,1 110,65" fill="none" stroke="#F5C4B3" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 172.7"/>
+      </svg>
+      <div class="gauge-pct" id="pct-ratio">—</div>
+    </div>
+    <div class="gauge-detail" id="detail-ratio">dépenses ÷ revenu net</div>
+  </div>
+</div>
+
+<div class="solde-card">
+  <div class="solde-left">
+    <div class="solde-label">Solde net du mois</div>
+    <div class="solde-value" id="solde-big">—</div>
+    <div class="kpi-sub" id="solde-mention" style="margin-top:6px"></div>
+  </div>
+  <div class="solde-bar-wrap">
+    <div class="bar-labels">
+      <span>Revenus net</span>
+      <span>Dépenses</span>
+    </div>
+    <div class="bar-track">
+      <div class="bar-fill-rev" id="bar-rev" style="width:100%"></div>
+      <div class="bar-fill-dep" id="bar-dep" style="width:0%"></div>
+    </div>
+    <div class="bar-legend">
+      <span><span class="legend-dot" style="background:var(--yellow-mid)"></span>Net</span>
+      <span><span class="legend-dot" style="background:var(--coral-dark);opacity:0.6"></span>Dépenses</span>
+    </div>
+  </div>
+</div>
+
+<div class="projection-card">
+  <p class="section-label" style="margin-bottom:0">Projection — virements attendus</p>
+  <div class="proj-grid" id="proj-grid"></div>
+</div>
+
+<p class="updated" id="updated-label"></p>
+
+<script>
+const PLAFOND = 77700;
+const ARC_LEN = 172.7;
+
+function fmt(n) {
+  return new Intl.NumberFormat('fr-FR', {minimumFractionDigits:0, maximumFractionDigits:0}).format(Math.round(n)) + ' €';
+}
+
+function setGauge(id, pct, color) {
+  const p = Math.min(Math.max(pct, 0), 100);
+  const fill = (p / 100) * ARC_LEN;
+  const el = document.getElementById(id);
+  el.setAttribute('stroke-dasharray', fill + ' ' + (ARC_LEN - fill));
+  if (color) el.setAttribute('stroke', color);
+}
+
+function getMonthLabel(offset) {
+  const picker = document.getElementById('monthPicker').value;
+  const [y, m] = picker.split('-').map(Number);
+  const d = new Date(y, m - 1 + offset, 1);
+  return d.toLocaleDateString('fr-FR', {month:'long', year:'numeric'});
+}
+
+function update() {
+  const brut = parseFloat(document.getElementById('brut').value) || 0;
+  const taux = parseFloat(document.getElementById('taux').value) || 0;
+  const depenses = parseFloat(document.getElementById('depenses').value) || 0;
+  const reste = parseFloat(document.getElementById('reste').value) || 0;
+  const caCumule = parseFloat(document.getElementById('ca-cumule').value) || 0;
+
+  const urssaf = Math.round(brut * taux / 100 * 100) / 100;
+  const net = Math.round((brut - urssaf) * 100) / 100;
+  const solde = Math.round((net - depenses) * 100) / 100;
+
+  document.getElementById('urssaf-display').textContent = fmt(urssaf);
+  document.getElementById('net-display').textContent = fmt(net);
+  document.getElementById('solde-display').textContent = fmt(solde);
+  document.getElementById('solde-big').textContent = fmt(solde);
+  document.getElementById('solde-big').className = 'solde-value ' + (solde >= 0 ? 'positive' : 'negative');
+
+  const mention = solde >= 0
+    ? (solde > net * 0.7 ? 'Super mois 🌟' : 'Bonne gestion')
+    : 'Dépenses > revenus nets';
+  document.getElementById('solde-mention').textContent = mention;
+  document.getElementById('solde-accent').style.background = solde >= 0 ? 'var(--green-dark)' : 'var(--coral-dark)';
+
+  const pctPlafond = (caCumule / PLAFOND) * 100;
+  setGauge('gauge-plafond', pctPlafond, pctPlafond > 80 ? '#E07050' : '#EDD97A');
+  document.getElementById('pct-plafond').textContent = Math.round(pctPlafond) + '%';
+
+  const total = brut + reste;
+  const pctEncaiss = total > 0 ? (brut / total) * 100 : 0;
+  setGauge('gauge-encaiss', pctEncaiss, '#A8D8B0');
+  document.getElementById('pct-encaiss').textContent = total > 0 ? Math.round(pctEncaiss) + '%' : '—';
+  document.getElementById('detail-encaiss').textContent = fmt(brut) + ' reçu · ' + fmt(reste) + ' attendu';
+
+  const pctRatio = net > 0 ? (depenses / net) * 100 : 0;
+  const ratioColor = pctRatio < 20 ? '#A8D8B0' : pctRatio < 35 ? '#EDD97A' : '#F5C4B3';
+  setGauge('gauge-ratio', Math.min(pctRatio, 100), ratioColor);
+  document.getElementById('pct-ratio').textContent = net > 0 ? Math.round(pctRatio) + '%' : '—';
+  document.getElementById('detail-ratio').textContent = fmt(depenses) + ' ÷ ' + fmt(net);
+
+  const maxBar = Math.max(net, depenses, 1);
+  document.getElementById('bar-rev').style.width = Math.round((net / maxBar) * 100) + '%';
+  document.getElementById('bar-dep').style.width = Math.round((depenses / maxBar) * 100) + '%';
+
+  const now = new Date();
+  document.getElementById('updated-label').textContent = 'Mis à jour le ' + now.toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
+}
+
+function buildProjection() {
+  const grid = document.getElementById('proj-grid');
+  grid.innerHTML = '';
+  const labels = [
+    {offset: 0, status: 'recu', statusLabel: 'Mois en cours'},
+    {offset: 1, status: 'attendu', statusLabel: 'Attendu'},
+    {offset: 2, status: 'attendu', statusLabel: 'Attendu'},
+  ];
+  labels.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'proj-item';
+    div.innerHTML = `
+      <div class="proj-month">${getMonthLabel(item.offset)}</div>
+      <div class="proj-val"><input type="number" value="${i === 0 ? (parseFloat(document.getElementById('brut').value)||0) : ''}" placeholder="0" min="0" step="1"> €</div>
+      <div class="proj-status status-${item.status}">${item.statusLabel}</div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+document.querySelectorAll('input').forEach(el => {
+  el.addEventListener('input', update);
+});
+document.getElementById('monthPicker').addEventListener('change', buildProjection);
+
+buildProjection();
+update();
+</script>
+</body>
+</html>
